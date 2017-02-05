@@ -2,4 +2,4 @@
 
 const handler = require('./src');
 
-exports.handler = handler;
+exports.handler = handler(process.env.BUCKET_NAME, new Date());

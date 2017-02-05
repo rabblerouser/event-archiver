@@ -1,18 +1,73 @@
 'use strict';
+const AWS = require('aws-sdk');
 
 const handler = require('../');
 
 describe('handler', () => {
+  let sandbox;
   let callback;
-  const event = {};
+  let s3;
+  const date = {
+    getUTCFullYear: () => 2017,
+    getUTCMonth: () => 1,
+    getUTCDate: () => 15,
+    getUTCHours: () => 2,
+  };
+  const event = {
+    Records: [
+      { eventSource: 'aws:kinesis', kinesis: {sequenceNumber: '3', data: 'encoded data'} },
+      { eventSource: 'aws:kinesis', kinesis: {sequenceNumber: '4', data: 'more data'} },
+    ],
+  };
 
   beforeEach(() => {
-    callback = sinon.spy();
-  })
+    sandbox = sinon.sandbox.create();
+    callback = sandbox.spy();
+    s3 = { getObject: sinon.stub(), putObject: sinon.spy() };
+    sandbox.stub(AWS, 'S3').returns(s3);
+  });
 
-  it('succeeds', () => {
-    handler(event, null, callback);
+  afterEach(() => {
+    sandbox.restore();
+  });
 
-    expect(callback).to.have.been.calledWith(null, 'ok');
+  const awsResult = result => ({ promise: () => Promise.resolve(result) });
+  const awsError = error => ({ promise: () => Promise.reject(error) });
+
+  it('fails if s3 returns a non-404 error when looking up the object', () => {
+    s3.getObject.withArgs({ Bucket: 'rr-events', Key: '2017-01-15_02' }).returns(awsError({ statusCode: 500 }));
+
+    return handler('rr-events', date)(event, null, callback).then(() => {
+      expect(callback).to.have.been.calledWith({ statusCode: 500 });
+    });
+  });
+
+  it('creates a new object in the bucket if one does not exist for the current hour', () => {
+    s3.getObject.withArgs({ Bucket: 'rr-events', Key: '2017-01-15_02' }).returns(awsError({ statusCode: 404 }));
+
+    return handler('rr-events', date)(event, null, callback).then(() => {
+      expect(s3.putObject).to.have.been.calledWith({
+        Bucket: 'rr-events',
+        Key: '2017-01-15_02',
+        ACL: 'private',
+        Body: '{"sequenceNumber":"3","data":"encoded data"}\n{"sequenceNumber":"4","data":"more data"}\n',
+      });
+      expect(callback).to.have.been.calledWith(null, 'ok');
+    });
+  });
+
+  it('appends to the existing object in the bucket if there is already one for the current hour', () => {
+    const existingContents = 'event1\nevent2\n';
+    s3.getObject.withArgs({ Bucket: 'rr-events', Key: '2017-01-15_02' }).returns(awsResult({ Body: existingContents }));
+
+    return handler('rr-events', date)(event, null, callback).then(() => {
+      expect(s3.putObject).to.have.been.calledWith({
+        Bucket: 'rr-events',
+        Key: '2017-01-15_02',
+        ACL: 'private',
+        Body: 'event1\nevent2\n{"sequenceNumber":"3","data":"encoded data"}\n{"sequenceNumber":"4","data":"more data"}\n',
+      });
+      expect(callback).to.have.been.calledWith(null, 'ok');
+    });
   });
 });

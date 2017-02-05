@@ -20,3 +20,46 @@ to, and a bucket where events should be forwarded to.
 
 With that in mind, the easiest way to deploy this right now is as part of a whole Rabble Rouser stack. See
 [rabblerouser-infra](https://github.com/rabblerouser/rabblerouser-infra) for how to do that.
+
+## API Reference
+
+### Input
+
+This lambda function receives an event object from kinesis that looks like this:
+
+```js
+{
+  Records: [
+    {
+      kinesis: {
+        kinesisSchemaVersion: '1.0',
+        partitionKey: '<kinesis partition key>',
+        sequenceNumber: '<sequence number of the event>',
+        data: '<base64-encoded JSON string>', // This is where the real payload data is
+        approximateArrivalTimestamp: 123456.78
+      },
+      eventSource: 'aws:kinesis',
+      eventVersion: '1.0',
+      eventID: '<shardID of the source shard>:<sequence number of the event>',
+      eventName: 'aws:kinesis:record',
+      invokeIdentityArn: '<ARN of the IAM role the lambda is running as>',
+      awsRegion: '<region of the source kinesis stream>',
+      eventSourceARN: '<ARN of the source kinesis stream>'
+    },
+  ]
+}
+```
+
+### Output
+
+This lambda function stores rows of JSON inside S3 objects, where each row contains these fields:
+
+```json
+{
+  "kinesisSchemaVersion": "1.0",
+  "partitionKey": "<kinesis partition key>",
+  "sequenceNumber": "<sequence number of the event>",
+  "data": "<base64-encoded JSON string>",
+  "approximateArrivalTimestamp": 123456.78
+}
+```
