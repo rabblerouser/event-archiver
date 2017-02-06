@@ -2,4 +2,5 @@
 
 const handler = require('./src');
 
-exports.handler = handler(process.env.BUCKET_NAME, new Date());
+const bucketName = process.env.BUCKET_NAME || 'cam-rr-event-archive-tmp';
+exports.handler = handler(bucketName, new Date());

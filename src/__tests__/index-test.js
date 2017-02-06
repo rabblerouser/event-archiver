@@ -15,24 +15,24 @@ describe('handler', () => {
   };
   const event = {
     Records: [
-      { eventSource: 'aws:kinesis', kinesis: {sequenceNumber: '3', data: 'encoded data'} },
-      { eventSource: 'aws:kinesis', kinesis: {sequenceNumber: '4', data: 'more data'} },
+      { eventSource: 'aws:kinesis', kinesis: {sequenceNumber: '3', data: 'string data'} },
+      { eventSource: 'aws:kinesis', kinesis: {sequenceNumber: '4', data: new Buffer('buffer data')} },
     ],
   };
+
+  const awsResult = result => ({ promise: () => Promise.resolve(result) });
+  const awsError = error => ({ promise: () => Promise.reject(error) });
 
   beforeEach(() => {
     sandbox = sinon.sandbox.create();
     callback = sandbox.spy();
-    s3 = { getObject: sinon.stub(), putObject: sinon.spy() };
+    s3 = { getObject: sinon.stub(), putObject: sinon.stub().returns(awsResult()) };
     sandbox.stub(AWS, 'S3').returns(s3);
   });
 
   afterEach(() => {
     sandbox.restore();
   });
-
-  const awsResult = result => ({ promise: () => Promise.resolve(result) });
-  const awsError = error => ({ promise: () => Promise.reject(error) });
 
   it('fails if s3 returns a non-404 error when looking up the object', () => {
     s3.getObject.withArgs({ Bucket: 'rr-events', Key: '2017-01-15_02' }).returns(awsError({ statusCode: 500 }));
@@ -50,7 +50,7 @@ describe('handler', () => {
         Bucket: 'rr-events',
         Key: '2017-01-15_02',
         ACL: 'private',
-        Body: '{"sequenceNumber":"3","data":"encoded data"}\n{"sequenceNumber":"4","data":"more data"}\n',
+        Body: '{"sequenceNumber":"3","data":"string data"}\n{"sequenceNumber":"4","data":"buffer data"}\n',
       });
       expect(callback).to.have.been.calledWith(null, 'ok');
     });
@@ -65,7 +65,7 @@ describe('handler', () => {
         Bucket: 'rr-events',
         Key: '2017-01-15_02',
         ACL: 'private',
-        Body: 'event1\nevent2\n{"sequenceNumber":"3","data":"encoded data"}\n{"sequenceNumber":"4","data":"more data"}\n',
+        Body: 'event1\nevent2\n{"sequenceNumber":"3","data":"string data"}\n{"sequenceNumber":"4","data":"buffer data"}\n',
       });
       expect(callback).to.have.been.calledWith(null, 'ok');
     });

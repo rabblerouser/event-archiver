@@ -12,15 +12,16 @@ const objectKey = now => {
   return `${year}-${month}-${date}_${hours}`;
 }
 
-const newData = event => `${event.Records.map(record => JSON.stringify(record.kinesis)).join('\n')}\n`;
+const stringifyData = obj => Object.assign({}, obj, { data: obj.data.toString() });
+const newData = event => `${event.Records.map(record => JSON.stringify(stringifyData(record.kinesis))).join('\n')}\n`;
 
-const appendEventToObject = event => existingContents => {
+const appendEventToExistingObject = event => existingContents => {
   return `${existingContents.Body}${newData(event)}`;
 };
 
 const createNewObject = event => s3Error => {
   if (s3Error.statusCode !== 404) {
-    return Promise.reject(s3Error);
+    throw s3Error;
   }
   return newData(event);
 };
@@ -30,16 +31,16 @@ module.exports = (bucket, date) => (event, context, callback) => {
   const key = objectKey(date);
   return s3.getObject({ Bucket: bucket, Key: key }).promise()
     .then(
-      appendEventToObject(event),
+      appendEventToExistingObject(event),
       createNewObject(event)
     )
     .then((newObjectContents) => {
-      s3.putObject({
+      return s3.putObject({
         Bucket: bucket,
         Key: key,
         ACL: 'private',
         Body: newObjectContents
-      })
+      }).promise();
     })
     .then(() => callback(null, 'ok'))
     .catch(callback);
