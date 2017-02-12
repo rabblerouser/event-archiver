@@ -4,6 +4,7 @@
   "description": "An AWS lambda function that persists all events from a kinesis stream to an S3 bucket",
   "main": "index.js",
   "scripts": {
+    "start": "node localDev.js",
     "test": "NODE_ENV=test mocha -r src/__tests__/testGlobals.js --recursive src/__tests__"
   },
   "repository": {
