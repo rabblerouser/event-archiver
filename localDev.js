@@ -2,7 +2,7 @@ const lambda = require('.').handler;
 const AWS = require('aws-sdk')
 
 const kinesis = new AWS.Kinesis({
-  endpoint: process.env.KINESIS_URL,
+  endpoint: process.env.KINESIS_ENDPOINT,
   region: 'ap-southeast-2',
   accessKeyId: 'FAKE',
   secretAccessKey: 'ALSO FAKE',

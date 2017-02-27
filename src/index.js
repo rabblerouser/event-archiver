@@ -26,8 +26,8 @@ const createNewObject = event => s3Error => {
   return newData(event);
 };
 
-module.exports = (bucket, date) => (event, context, callback) => {
-  const s3 = new AWS.S3();
+module.exports = (bucket, date, s3Config={}) => (event, context, callback) => {
+  const s3 = new AWS.S3(s3Config);
   const key = objectKey(date);
   return s3.getObject({ Bucket: bucket, Key: key }).promise()
     .then(
