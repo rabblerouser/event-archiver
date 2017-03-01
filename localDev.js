@@ -1,6 +1,7 @@
 const lambda = require('.').handler;
 const AWS = require('aws-sdk')
 
+const StreamName = process.env.STREAM_NAME;
 const kinesis = new AWS.Kinesis({
   endpoint: process.env.KINESIS_ENDPOINT,
   region: 'ap-southeast-2',
@@ -28,12 +29,12 @@ const fetchAndProcessRecords = (shardIterator) => {
   });
 }
 const main = () => {
-  return kinesis.describeStream({ StreamName: 'rabblerouser_stream' }).promise()
+  return kinesis.describeStream({ StreamName }).promise()
     .then(stream => {
-      console.log('Found rabblerouser_stream!');
-      const shardId = stream.StreamDescription.Shards[0].ShardId
+      console.log(`Found ${StreamName}!`);
+      const ShardId = stream.StreamDescription.Shards[0].ShardId
 
-      const params = { ShardId: shardId, ShardIteratorType: 'LATEST', StreamName: 'rabblerouser_stream' };
+      const params = { StreamName, ShardId, ShardIteratorType: 'LATEST' };
       return kinesis.getShardIterator(params).promise();
     })
     .then(shardIterator => {
