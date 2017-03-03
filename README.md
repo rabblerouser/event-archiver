@@ -1,4 +1,4 @@
-# rabblerouser-event-archiver
+# Rabble Rouser Event Archiver
 
 An AWS lambda function that persists all events from a kinesis stream to an S3 bucket
 
@@ -24,7 +24,7 @@ Or you can build the docker image like this...
 docker build -t rabblerouser/event-archiver .
 ```
 
-... and then run it with docker-compose. E.g. see [rabblerouser-core](https://github.com/rabblerouser/rabblerouser-core).
+... and then run it with docker-compose. E.g. see [core](https://github.com/rabblerouser/core).
 
 ## Deployment
 There is a build pipeline for this project, it publishes the zipped code to an s3 bucket.
@@ -33,7 +33,7 @@ Actual deployment of this lambda function requires a few moving parts, such as I
 to, and a bucket where events should be forwarded to.
 
 With that in mind, the easiest way to deploy this right now is as part of a whole Rabble Rouser stack. See
-[rabblerouser-infra](https://github.com/rabblerouser/rabblerouser-infra) for how to do that.
+[infra](https://github.com/rabblerouser/infra) for how to do that.
 
 ## API Reference
 
