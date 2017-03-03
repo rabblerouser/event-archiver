@@ -12,6 +12,20 @@ npm install
 npm test
 ```
 
+## Run it locally
+You can either run it natively:
+
+```sh
+KINESIS_ENDPOINT'http://localhost:4567' STREAM_NAME='rabblerouser_stream' npm start
+```
+
+Or you can build the docker image like this...
+```sh
+docker build -t rabblerouser/event-archiver .
+```
+
+... and then run it with docker-compose. E.g. see [rabblerouser-core](https://github.com/rabblerouser/rabblerouser-core).
+
 ## Deployment
 There is a build pipeline for this project, it publishes the zipped code to an s3 bucket.
 
