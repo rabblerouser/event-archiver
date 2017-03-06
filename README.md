@@ -1,5 +1,7 @@
 # Rabble Rouser Event Archiver
 
+[![Build Status](https://travis-ci.org/rabblerouser/event-archiver.svg?branch=master)](https://travis-ci.org/rabblerouser/event-archiver)
+
 An AWS lambda function that persists all events from a kinesis stream to an S3 bucket
 
 ## Background.

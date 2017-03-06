@@ -1,0 +1,13 @@
+sudo: required
+services:
+- docker
+
+language: node_js
+node_js:
+  - "6"
+
+before_install: pip install --upgrade --user awscli
+
+after_success:
+  - if [ "$TRAVIS_BRANCH" == "master" ]; then bin/lambda-deploy.sh; fi
+  - if [ "$TRAVIS_BRANCH" == "master" ]; then bin/docker-build-and-deploy.sh; fi
