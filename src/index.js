@@ -12,18 +12,19 @@ const objectKey = now => {
   return `${year}-${month}-${date}_${hours}`;
 }
 
-const stringifyData = obj => Object.assign({}, obj, { data: obj.data.toString() });
-const newData = event => `${event.Records.map(record => JSON.stringify(stringifyData(record.kinesis))).join('\n')}\n`;
+const serialiseKinesisRecords = kinesisEvent => (
+  `${kinesisEvent.Records.map(record => JSON.stringify(record.kinesis)).join('\n')}\n`
+);
 
-const appendEventToExistingObject = event => existingContents => {
-  return `${existingContents.Body}${newData(event)}`;
+const appendEventToExistingObject = kinesisEvent => existingContents => {
+  return `${existingContents.Body}${serialiseKinesisRecords(kinesisEvent)}`;
 };
 
-const createNewObject = event => s3Error => {
+const createNewObject = kinesisEvent => s3Error => {
   if (s3Error.statusCode !== 404) {
     throw s3Error;
   }
-  return newData(event);
+  return serialiseKinesisRecords(kinesisEvent);
 };
 
 module.exports = (bucket, date, s3Config) => (event, context, callback) => {

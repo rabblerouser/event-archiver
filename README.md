@@ -37,6 +37,16 @@ to, and a bucket where events should be forwarded to.
 With that in mind, the easiest way to deploy this right now is as part of a whole Rabble Rouser stack. See
 [infra](https://github.com/rabblerouser/infra) for how to do that.
 
+## Manual testing with fakeS3
+
+During local development with fakeS3, it can be useful to manually check that this lambda uploaded the correct data to
+S3. If fakeS3 is running inside a Docker container, first make sure its port is exposed (either by changing the docker
+run command, or the docker-compose file). Then you can point the S3 CLI at it with commands like this:
+
+```sh
+AWS_ACCESS_KEY_ID=fake AWS_SECRET_ACCESS_KEY=fake aws --endpoint-url='http://localhost:4569' s3api list-buckets
+```
+
 ## API Reference
 
 ### Input

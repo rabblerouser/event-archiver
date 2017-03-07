@@ -28,7 +28,7 @@
     "aws-sdk": "^2.9.0"
   },
   "devDependencies": {
-    "@rabblerouser/local-kinesis-lambda-runner": "^0.1.0",
+    "@rabblerouser/local-kinesis-lambda-runner": "^0.2.0",
     "chai": "^3.5.0",
     "mocha": "^3.2.0",
     "sinon": "^1.17.7",

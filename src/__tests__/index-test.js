@@ -15,8 +15,8 @@ describe('handler', () => {
   };
   const event = {
     Records: [
-      { eventSource: 'aws:kinesis', kinesis: {sequenceNumber: '3', data: 'string data'} },
-      { eventSource: 'aws:kinesis', kinesis: {sequenceNumber: '4', data: new Buffer('buffer data')} },
+      { eventSource: 'aws:kinesis', kinesis: {sequenceNumber: '3', data: 'first data'} },
+      { eventSource: 'aws:kinesis', kinesis: {sequenceNumber: '4', data: 'second data'} },
     ],
   };
 
@@ -50,7 +50,7 @@ describe('handler', () => {
         Bucket: 'rr-events',
         Key: '2017-01-15_02',
         ACL: 'private',
-        Body: '{"sequenceNumber":"3","data":"string data"}\n{"sequenceNumber":"4","data":"buffer data"}\n',
+        Body: '{"sequenceNumber":"3","data":"first data"}\n{"sequenceNumber":"4","data":"second data"}\n',
       });
       expect(callback).to.have.been.calledWith(null, 'ok');
     });
@@ -65,7 +65,7 @@ describe('handler', () => {
         Bucket: 'rr-events',
         Key: '2017-01-15_02',
         ACL: 'private',
-        Body: 'event1\nevent2\n{"sequenceNumber":"3","data":"string data"}\n{"sequenceNumber":"4","data":"buffer data"}\n',
+        Body: 'event1\nevent2\n{"sequenceNumber":"3","data":"first data"}\n{"sequenceNumber":"4","data":"second data"}\n',
       });
       expect(callback).to.have.been.calledWith(null, 'ok');
     });
