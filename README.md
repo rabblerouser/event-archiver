@@ -10,15 +10,15 @@ so that we have a permanent record of all events.
 
 ## Install and run the tests
 ```sh
-npm install
-npm test
+yarn
+yarn test
 ```
 
 ## Run it locally
 You can either run it natively:
 
 ```sh
-KINESIS_ENDPOINT'http://localhost:4567' STREAM_NAME='rabblerouser_stream' npm start
+KINESIS_ENDPOINT'http://localhost:4567' STREAM_NAME='rabblerouser_stream' yarn start
 ```
 
 Or you can build the docker image like this...

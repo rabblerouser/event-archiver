@@ -2,28 +2,15 @@
   "name": "event-archiver",
   "version": "1.0.0",
   "description": "An AWS lambda function that persists all events from a kinesis stream to an S3 bucket",
-  "main": "index.js",
   "scripts": {
-    "start": "node localDev.js",
+    "start": "nodemon -L localDev.js",
     "test": "NODE_ENV=test mocha -r src/__tests__/testGlobals.js --recursive src/__tests__"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/rabblerouser/event-archiver.git"
+    "url": "https://github.com/rabblerouser/event-archiver.git"
   },
-  "keywords": [
-    "rabblerouser",
-    "kinesis",
-    "s3",
-    "stream",
-    "events"
-  ],
-  "author": "The Rabble Rouser Team",
   "license": "AGPL-3.0",
-  "bugs": {
-    "url": "https://github.com/rabblerouser/event-archiver/issues"
-  },
-  "homepage": "https://github.com/rabblerouser/event-archiver#readme",
   "dependencies": {
     "aws-sdk": "^2.9.0"
   },
@@ -31,7 +18,8 @@
     "@rabblerouser/local-kinesis-lambda-runner": "^0.2.5",
     "chai": "^3.5.0",
     "mocha": "^3.2.0",
-    "sinon": "^1.17.7",
-    "sinon-chai": "^2.8.0"
+    "nodemon": "^1.15.0",
+    "sinon": "^4.3.0",
+    "sinon-chai": "^2.14.0"
   }
 }
