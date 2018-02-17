@@ -8,4 +8,4 @@ const s3Config = s3Endpoint ?
   { endpoint: s3Endpoint, accessKeyId: 'FAKE', secretAccessKey: 'ALSO FAKE' } :
   {};
 
-exports.handler = handler(bucketName, new Date(), s3Config);
+exports.handler = handler(bucketName, new Date(), s3Config, console);
