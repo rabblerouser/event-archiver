@@ -19,6 +19,7 @@ describe('handler', () => {
       { eventSource: 'aws:kinesis', kinesis: {sequenceNumber: '4', data: 'second data'} },
     ],
   };
+  const console = { log: _ => _, warn: _ => _, error: _ => _ };
 
   const awsResult = result => ({ promise: () => Promise.resolve(result) });
   const awsError = error => ({ promise: () => Promise.reject(error) });
@@ -37,7 +38,7 @@ describe('handler', () => {
   it('fails if s3 returns a non-404 error when looking up the object', () => {
     s3.getObject.withArgs({ Bucket: 'rr-events', Key: '2017-01-15_02' }).returns(awsError({ statusCode: 500 }));
 
-    return handler('rr-events', date)(event, null, callback).then(() => {
+    return handler('rr-events', date, {}, console)(event, null, callback).then(() => {
       expect(callback).to.have.been.calledWith({ statusCode: 500 });
     });
   });
@@ -45,7 +46,7 @@ describe('handler', () => {
   it('creates a new object in the bucket if one does not exist for the current hour', () => {
     s3.getObject.withArgs({ Bucket: 'rr-events', Key: '2017-01-15_02' }).returns(awsError({ statusCode: 404 }));
 
-    return handler('rr-events', date)(event, null, callback).then(() => {
+    return handler('rr-events', date, {}, console)(event, null, callback).then(() => {
       expect(s3.putObject).to.have.been.calledWith({
         Bucket: 'rr-events',
         Key: '2017-01-15_02',
@@ -60,7 +61,7 @@ describe('handler', () => {
     const existingContents = 'event1\nevent2\n';
     s3.getObject.withArgs({ Bucket: 'rr-events', Key: '2017-01-15_02' }).returns(awsResult({ Body: existingContents }));
 
-    return handler('rr-events', date)(event, null, callback).then(() => {
+    return handler('rr-events', date, {}, console)(event, null, callback).then(() => {
       expect(s3.putObject).to.have.been.calledWith({
         Bucket: 'rr-events',
         Key: '2017-01-15_02',
