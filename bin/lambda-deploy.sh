@@ -3,7 +3,7 @@
 set -e
 
 echo 'REMOVING DEV DEPENDENCIES'
-npm prune --production
+yarn --production
 
 echo 'PACKAGING THE CODE'
 zip -r event_archiver.zip index.js src node_modules/ -x __tests__
